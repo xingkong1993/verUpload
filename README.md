@@ -38,10 +38,9 @@ new verUpload({
 [文件上传](https://www.xincheng-blog.cn/up/)
 
 ###### 五、图片样式
+![文件上传](image/upload.png)
 ![文件上传](image/upload%20(1).png)
 ![文件上传](image/upload%20(2).png)
-![文件上传](image/upload%20(3).png)
-![文件上传](image/upload%20(4).png)
 
 ###### 版权信息
 > Copyright © 2019 by [搬砖的小白](https://www.xincheng-blog.cn)  
