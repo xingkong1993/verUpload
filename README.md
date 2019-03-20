@@ -37,7 +37,7 @@ new verUpload({
 ###### 四、样式示例
 [文件上传](https://www.xincheng-blog.cn/up/)
 
-###### 五、图片样式
+###### 五、实例图片
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload.png)
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload1.png)
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload2.png)
