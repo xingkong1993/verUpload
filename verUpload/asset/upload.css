@@ -8,7 +8,9 @@
 
 .uploadFileListItems{
     list-style: decimal;
-    height: 30px;
+    min-height: 30px;
+    max-height: 120px;
+    height: auto;
 }
 
 .uploadFilewrapper {
