@@ -1,5 +1,4 @@
-###### verupload.js 
-![versions](https://github.com/xingkong1993/image_relesess/blob/master/vesion.png) 1.0.0
+###### verupload.js 1.0.0
 
 ###### 一、使用须知：
 verupload.js是一款文件上传插件，通过普通按钮或者任意控件元素上传文件，插件IE目前仅支持IE10+以上浏览器，后期将逐步开放支持低版本IE浏览器。
