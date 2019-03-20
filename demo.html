@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"/>
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="telephone=no" name="format-detection"/>
+    <meta content="email=no" name="format-detection"/>
+    <meta content="initial-scale=1.0,user-scalable=no,maximum-scale=1" media="(device-height: 568px)" name="viewport"/>
+    <title>上传文件</title>
+</head>
+<body>
+<div>
+    <button id="files">上传</button>
+</div>
+</body>
+<script src="verUpload/verUpload.js"></script>
+<script>
+    new verUpload({
+        files: "#files",
+        name: "files",
+        load_list: true,
+        success:function (d) {
+            alert(d);
+        },
+        fail:function (d) {
+            alert(d)
+        },
+        size:1024*4,
+        ext:['jpg','jpeg','png','gif']
+    });
+</script>
+</html>
