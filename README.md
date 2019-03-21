@@ -33,6 +33,7 @@ new verUpload({
 6. size：允许上传文件的最大值，单位Kb。
 7. ext：允许上传的文件后缀集合。
 8. method：上传文件的提交地址，默认为：api/upload.php。
+9. data-upload-more：多文件上传标记，在上传控件中加入标记表示当前控件按钮支持多文件上传，写法：data-upload-more='true'
 
 ###### 四、样式示例
 [文件上传](https://www.xincheng-blog.cn/up/)
