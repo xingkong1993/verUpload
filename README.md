@@ -39,8 +39,8 @@ new verUpload({
 
 ###### 五、实例图片
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload.png)
-![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload1.png)
-![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload2.png)
+![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload5.png)
+![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload6.png)
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload3.png)
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload4.png)
 
