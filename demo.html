@@ -14,6 +14,10 @@
 <div>
     <button id="files">上传</button>
 </div>
+<br>
+<div>
+    <button id="more_upload_file" data-upload-more="true">多文件上传</button>
+</div>
 </body>
 <script src="verUpload/verUpload.js"></script>
 <script>
@@ -21,14 +25,25 @@
         files: "#files",
         name: "files",
         load_list: true,
-        success:function (d) {
+        success: function (d) {
             alert(d);
         },
-        fail:function (d) {
+        fail: function (d) {
             alert(d)
         },
-        size:1024*4,
-        ext:['jpg','jpeg','png','gif']
+        size: 1024 * 4,
+        ext: ['jpg', 'jpeg', 'png', 'gif']
+    });
+
+    new verUpload({
+        files: "#more_upload_file",
+        name: "files_item",
+        success: function (d) {
+            alert(d);
+        },
+        fail: function (d) {
+            alert(d)
+        }
     });
 </script>
 </html>

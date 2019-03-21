@@ -6,7 +6,8 @@ window.verUpload = (function () {
         method = "api/upload.php",
         lists,
         files,
-        images;
+        images,
+        format = new FormData();
     var uploads = function (param) {
         if (param.files) {
             files = document.querySelector(param.files)
@@ -22,48 +23,63 @@ window.verUpload = (function () {
         links.id = "ver-upload";
         document.getElementsByTagName("head")[0].appendChild(links);
         NAME = param.name ? param.name : files.name;
-        var toarray = param.ext ? param.ext : [];
-        if (toarray.length) {
-            toarray = toarray.join("|");
-            EXT = new RegExp("(" + toarray + ")$", "i");
-        }
         var input_file;
         if (input_file = files.parentElement.querySelector("input[name='" + NAME + "']")) {
             files.parentElement.removeChild(input_file);
         }
         var input_file = document.createElement("input");
-        if (param.success) success = param.success;
-        if (param.fail) fail = param.fail;
-        if (param.save) saves = param.save;
-        if (param.method) method = param.method;
+        success = param.success ? param.success : success;
+        fail = param.fail ? param.fail : fail;
+        method = param.method ? param.method : "api/upload.php";
         if (param.load_list) lists = true;
-        size = param.size ? param.size : 0;
+        files.setAttribute("data-upload-btn", true);
+        files.setAttribute("data-upload-method", method);
+        var toarray = param.ext ? param.ext : [];
+        // if (toarray.length) {
+        //     // toarray = toarray.join("|");
+        //     // EXT = new RegExp("(" + toarray + ")$", "i");
+        //
+        // }
+        if (param.size) {
+            files.setAttribute("data-upload-size", param.size);
+        }
+        files.setAttribute("data-upload-ext", JSON.stringify(toarray));
         input_file.type = "file";
         input_file.name = NAME;
         input_file.style.display = "none";
         input_file.onchange = upload_files;
         files.parentElement.appendChild(input_file);
         files.onclick = function () {
-            var fi = this.parentElement.querySelector("input[name='"+NAME+"'][type='file']");
+            var fi = this.parentElement.querySelector("input[type='file']");
             fi.click();
         }
     };
     var upload_files = function () {
-        if(this.files){
+        var btn = this.parentElement.querySelector("[data-upload-btn]");
+        var more = btn.getAttribute("data-upload-more");
+        method = btn.getAttribute("data-upload-method");
+        if (this.files) {
             FILES = this.files[0];
-        }else{
+        } else {
             this.style.display = "inline-block";
             return fail("当前浏览器版本太低，不支持上传插件！");
         }
 
         if (!FILES) return false;
+        size = btn.getAttribute("data-upload-size");
+        if (size) size = parseInt(size);
         if (size > 0) {
             var s = FILES.size / 1024;
             if (s > size) {
                 return fail("上传文件超过限制大小【" + size + "KB】");
             }
         }
-
+        var toarray = btn.getAttribute("data-upload-ext");
+        toarray = JSON.parse(toarray);
+        if (toarray.length) {
+            toarray = toarray.join("|");
+            EXT = new RegExp("(" + toarray + "$)", "i");
+        }
         if (EXT) {
             var ext = FILES.name.split(".");
             ext = ext[ext.length - 1];
@@ -72,9 +88,9 @@ window.verUpload = (function () {
             }
         }
         var rs = /^(image)/;
-        if(rs.test(FILES.type)){
+        if (rs.test(FILES.type) && !more) {
             images = this.parentElement.querySelector("img");
-            if(!images){
+            if (!images) {
                 images = document.createElement("img");
                 images.width = 120;
                 this.parentElement.appendChild(images);
@@ -85,40 +101,58 @@ window.verUpload = (function () {
             };
             reader.readAsDataURL(FILES);
         }
-        if (lists) {
+        NAME = this.name;
+        var uploadFileprocess_active, uploadFileLodaingText, uploadFileprocess_static;
+        if (lists || more) {
+            // this.parentElement.classList.add("upload")
+            var pares = this.parentElement.querySelector(".uploadFilesBox");
+            if (!pares) {
+                pares = document.createElement("div");
+                pares.className = "uploadFilesBox";
+                this.parentElement.appendChild(pares);
+            }
             //查看是否有列表
-            var ul = this.parentElement.querySelector(".uploadFileList");
+            var ul = pares.querySelector(".uploadFileList");
             if (!ul) {
                 ul = document.createElement("ul");
                 ul.className = "uploadFileList";
-                this.parentElement.appendChild(ul);
+                pares.appendChild(ul);
             }
             var li = document.createElement("li");
             li.className = "uploadFileListItems";
-            var div1 = document.createElement("div");
-            div1.className = "uploadFilewrapper uploadFilemyPromption-wrapper";
-            var uploadFilemainContain = document.createElement("div");
-            uploadFilemainContain.className = "uploadFilemainContain";
-            var uploadFilereturnCommission = document.createElement("div");
-            uploadFilereturnCommission.className = "uploadFilereturnCommission";
-            var uploadFileprocess = document.createElement("div");
-            uploadFileprocess.className = "uploadFileprocess";
-            var uploadFileicon_flag = document.createElement("i");
-            uploadFileicon_flag.className = "uploadFileicon-flag";
-            var uploadFileprocess_static = document.createElement("div");
-            uploadFileprocess_static.className = "uploadFileprocess-static";
-            var uploadFileprocess_active = document.createElement("div");
-            uploadFileprocess_active.className = "uploadFileprocess-active";
-            var uploadFileLodaingText = document.createElement("div");
-            uploadFileLodaingText.className = "uploadFileLodaingText";
-            uploadFileprocess.appendChild(uploadFileicon_flag);
-            uploadFileprocess.appendChild(uploadFileprocess_static);
-            uploadFileprocess.appendChild(uploadFileprocess_active);
-            uploadFileprocess.appendChild(uploadFileLodaingText);
-            uploadFilereturnCommission.appendChild(uploadFileprocess);
-            uploadFilemainContain.appendChild(uploadFilereturnCommission);
-            div1.appendChild(uploadFilemainContain);
-            li.appendChild(div1);
+            if (!more || (more && !this.parentElement.querySelector(".uploadFilewrapper"))) {
+                var div1 = document.createElement("div");
+                div1.className = "uploadFilewrapper uploadFilemyPromption-wrapper";
+                var uploadFilemainContain = document.createElement("div");
+                uploadFilemainContain.className = "uploadFilemainContain";
+                var uploadFilereturnCommission = document.createElement("div");
+                uploadFilereturnCommission.className = "uploadFilereturnCommission";
+                var uploadFileprocess = document.createElement("div");
+                uploadFileprocess.className = "uploadFileprocess";
+                var uploadFileicon_flag = document.createElement("i");
+                uploadFileicon_flag.className = "uploadFileicon-flag";
+                var uploadFileprocess_static = document.createElement("div");
+                uploadFileprocess_static.className = "uploadFileprocess-static";
+                var uploadFileprocess_active = document.createElement("div");
+                uploadFileprocess_active.className = "uploadFileprocess-active";
+                var uploadFileLodaingText = document.createElement("div");
+                uploadFileLodaingText.className = "uploadFileLodaingText";
+                uploadFileprocess.appendChild(uploadFileicon_flag);
+                uploadFileprocess.appendChild(uploadFileprocess_static);
+                uploadFileprocess.appendChild(uploadFileprocess_active);
+                uploadFileprocess.appendChild(uploadFileLodaingText);
+                uploadFilereturnCommission.appendChild(uploadFileprocess);
+                uploadFilemainContain.appendChild(uploadFilereturnCommission);
+                div1.appendChild(uploadFilemainContain);
+                if (!more) {
+                    li.appendChild(div1);
+                } else {
+                    uploadFileLodaingText.innerText = "文件准备中...";
+                    ul.classList.add("uploadFileMoreLoadsList")
+                    div1.classList.add("uploadFileMoreLoads");
+                    pares.appendChild(div1);
+                }
+            }
             var div2 = document.createElement("div");
             div2.className = "uploadFileListItemsContents";
             var uploadFileListItemsName = document.createElement("span");
@@ -135,9 +169,131 @@ window.verUpload = (function () {
             }
             uploadFileListItemsSizes.innerText = ss + tt;
             div2.appendChild(uploadFileListItemsSizes);
+            if (more) {
+                var len = ul.querySelectorAll("li").length;
+                var names = this.name + "[" + len + "]";
+                format.append(names, FILES);
+                var span_close = document.createElement("a");
+                span_close.className = "uploadFileClose";
+                span_close.href = "javascript:;";
+                span_close.innerText = "取消";
+                span_close.onclick = close_uploads;
+                span_close.setAttribute("data-del-names", names);
+                span_close.setAttribute("data-file-names", FILES.name);
+                div2.appendChild(span_close);
+                if (!pares.querySelector(".uploadFileMoreBtn")) {
+                    var buttons = document.createElement("div");
+                    buttons.className = "uploadFileMoreBtn";
+                    var btns = document.createElement("a");
+                    btns.href = "javascript:;";
+                    btns.className = "uploadFileOk";
+                    btns.text = "上传";
+                    btns.onclick = move_saves;
+                    buttons.appendChild(btns);
+                    pares.appendChild(buttons);
+                }
+            }
             li.appendChild(div2);
             ul.appendChild(li);
         }
+        if (!more) {
+            saves(this, uploadFileprocess_active, uploadFileLodaingText, uploadFileprocess_static);
+        }
+    };
+
+    var close_uploads = function () {
+        var deletes = this.getAttribute("data-del-name");
+        format.delete(deletes);
+        var parent = this.parentElement.parentElement;
+        parent.parentElement.removeChild(parent);
+    };
+
+    var move_saves = function () {
+        var as = this.parentElement.parentElement.querySelectorAll(".uploadFileClose");
+        if (as.length < 1) {
+            return fail("没有上传文件！");
+        }
+        var items_children = {
+            statics: this.parentElement.parentElement.querySelector(".uploadFileprocess-static"),
+            actives: this.parentElement.parentElement.querySelector(".uploadFileprocess-active"),
+            text: this.parentElement.parentElement.querySelector(".uploadFileLodaingText")
+        };
+        var flag = 0;
+        [].forEach.call(as, function (as_items) {
+            as_items.style.display = "none";
+            var name = as_items.getAttribute("data-del-names");
+            if(!format.get(name)) {
+                flag++;
+            }
+        });
+        if(flag == as.length){
+            return fail("重复上传文件！");
+        }
+        items_children.statics.classList.remove("uploadFileError");
+        items_children.statics.classList.remove("uploadFileSuccess");
+        items_children.actives.classList.remove("uploadFileError");
+        items_children.actives.classList.remove("uploadFileSuccess");
+        format.append("name", NAME);
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", method, true);
+        xhr.upload.onprogress = function (evt) {
+            var pro = Math.floor((evt.loaded / evt.total * 100));
+            var width = pro + "%";
+            if (pro < 50) {
+                width = ((5 - pro % 5) + pro) + "%";
+            } else if (pro >= 50 && pro < 90) {
+                width = ((2 - pro % 2) + pro) + "%";
+            }
+            items_children.actives.style.width = width;
+            if (pro < 100) {
+                items_children.text.innerText = "已上传：" + width;
+            } else {
+                items_children.text.innerText = "文件处理中...";
+            }
+        };
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+                format.delete("name");
+                if (xhr.status == 200 || xhr.status == 304) {
+                    items_children.text.innerText = "上传成功";
+                    items_children.actives.classList.remove("uploadFileError");
+                    items_children.actives.classList.add("uploadFileSuccess");
+                    items_children.statics.classList.remove("uploadFileError");
+                    items_children.statics.classList.add("uploadFileSuccess");
+                    if (typeof xhr.responseText != "object") var d = JSON.parse(xhr.responseText);
+                    [].forEach.call(as, function (item) {
+                        var name = item.getAttribute("data-del-names");
+                        var datas = item.getAttribute("data-file-names");
+                        if (d.data && d.data.indexOf(datas) >= 0) {
+                            item.style.display = "inline-block";
+                            item.innerText = "上传失败";
+                        } else {
+                            format.delete(name);
+                            var span = document.createElement("b");
+                            span.className = "uploadFileOk";
+                            span.innerText = "上传成功";
+                            item.parentElement.appendChild(span);
+                        }
+                    });
+                    success(d);
+                } else {
+                    items_children.text.innerText = "上传失败";
+                    items_children.actives.classList.add("uploadFileError");
+                    items_children.actives.classList.remove("uploadFileSuccess");
+                    items_children.statics.classList.add("uploadFileError");
+                    items_children.statics.classList.remove("uploadFileSuccess");
+                    [].forEach.call(as, function (item) {
+                        item.style.display = "inline-block";
+                        item.innerText = "上传失败";
+                    });
+                    fail(xhr.responseText);
+                }
+            }
+        };
+        xhr.send(format);
+    };
+
+    var saves = function (obj, uploadFileprocess_active, uploadFileLodaingText, uploadFileprocess_static) {
         var data = new FormData();
         data.append(NAME, FILES);
         data.append("name", NAME);
@@ -146,20 +302,11 @@ window.verUpload = (function () {
         xhr.upload.onprogress = function (evt) {
             var pro = Math.floor((evt.loaded / evt.total * 100));
             var width = pro + "%";
-            if (pro >= 5 && pro <= 10) {
-                width = "10%";
-            } else if (pro > 10 && pro <= 20) {
-                width = 20 + "%";
-            } else if (pro > 20 && pro <= 30) {
-                width = "30%";
-            } else if (pro > 30 && pro <= 50) {
-                width = "50%";
-            } else if (pro > 50 && pro <= 75) {
-                width = "75%";
-            } else if (pro > 75 && pro <= 90) {
-                width = "90%";
+            if (pro < 50) {
+                width = ((5 - pro % 5) + pro) + "%";
+            } else if (pro >= 50 && pro < 90) {
+                width = ((2 - pro % 2) + pro) + "%";
             }
-
             if (lists) {
                 uploadFileprocess_active.style.width = width;
                 if (pro < 100) {
@@ -197,10 +344,6 @@ window.verUpload = (function () {
             }
         };
         xhr.send(data);
-    };
-
-    var saves = function () {
-
     };
 
     var success = function (d) {
