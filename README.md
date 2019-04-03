@@ -36,7 +36,7 @@ new verUpload({
 9. data-upload-more：多文件上传标记，在上传控件中加入标记表示当前控件按钮支持多文件上传，写法：data-upload-more='true'
 
 ###### 四、样式示例
-[文件上传](https://www.xincheng-blog.cn/up/)
+[文件上传](https://www.xincheng-blog.cn/details.html?id=20190402LRSmnvUyLs)
 
 ###### 五、实例图片
 ![文件上传](https://github.com/xingkong1993/image_relesess/blob/master/upload.png)

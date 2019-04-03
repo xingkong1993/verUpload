@@ -34,12 +34,10 @@ window.verUpload = (function () {
         if (param.load_list) lists = true;
         files.setAttribute("data-upload-btn", true);
         files.setAttribute("data-upload-method", method);
+        //是否直接上传到服务器，默认为true
+        files.setAttribute("data-upload-send", param.uploads ? false : true);
+        files.setAttribute("data-upload-inputs", param.inputs ? param.inputs : "");
         var toarray = param.ext ? param.ext : [];
-        // if (toarray.length) {
-        //     // toarray = toarray.join("|");
-        //     // EXT = new RegExp("(" + toarray + ")$", "i");
-        //
-        // }
         if (param.size) {
             files.setAttribute("data-upload-size", param.size);
         }
@@ -88,6 +86,33 @@ window.verUpload = (function () {
             }
         }
         var rs = /^(image)/;
+        var upload_send = btn.getAttribute("data-upload-send");
+        //不上传到服务端
+        if (upload_send == "false") {
+            var inputs = btn.getAttribute("data-upload-inputs");
+            if (!inputs) {
+                return fail("缺失必要参数！");
+            }
+            inputs = this.parentElement.querySelector(inputs);
+            if (rs.test(FILES.type)) {
+                images = this.parentElement.querySelector("img");
+                if (!images) {
+                    images = document.createElement("img");
+                    images.width = 120;
+                    this.parentElement.appendChild(images);
+                }
+            }
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                if (images) {
+                    images.src = e.target.result;
+                }
+                inputs.value = e.target.result;
+            };
+            reader.readAsDataURL(FILES);
+            return success("上传成功");
+        }
+
         if (rs.test(FILES.type) && !more) {
             images = this.parentElement.querySelector("img");
             if (!images) {
@@ -222,11 +247,11 @@ window.verUpload = (function () {
         [].forEach.call(as, function (as_items) {
             as_items.style.display = "none";
             var name = as_items.getAttribute("data-del-names");
-            if(!format.get(name)) {
+            if (!format.get(name)) {
                 flag++;
             }
         });
-        if(flag == as.length){
+        if (flag == as.length) {
             return fail("重复上传文件！");
         }
         items_children.statics.classList.remove("uploadFileError");
